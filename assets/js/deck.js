@@ -13,10 +13,10 @@
   var timerStepIndex = 0;
 
   var ACTIVITY_STEPS = [
-    { label: "From Video 1: Name one principle you would demand before funding any prevention program.", duration: 180 },
-    { label: "From Video 2: Which THRIVE module would you facilitate? Write one sentence why.", duration: 180 },
-    { label: "From Video 3: A participant pushes back. Write what you would say using one facilitation move.", duration: 120 },
-    { label: "Pair up: Share your three answers. Your partner picks the strongest one.", duration: 120 }
+    { label: "From Video 1: Name one principle you would demand before funding any prevention program.", duration: 60 },
+    { label: "From Video 2: Which THRIVE module would you facilitate? Write one sentence why.", duration: 60 },
+    { label: "From Video 3: A participant pushes back. Write what you would say using one facilitation move.", duration: 60 },
+    { label: "Pair up: Share your three answers. Your partner picks the strongest one.", duration: 60 }
   ];
 
   function init() {
