@@ -26,6 +26,7 @@
     setupNavigation();
     setupKeyboard();
     setupTimer();
+    setupNarration();
     goToSlide(0);
   }
 
@@ -139,6 +140,97 @@
     } else {
       document.exitFullscreen().catch(function () {});
     }
+  }
+
+  // --- Narration (slide 7 read-aloud) ---
+  var narrateVoice = null;
+
+  function pickVoice() {
+    var voices = window.speechSynthesis.getVoices();
+    // Prefer British English for that attention-grabbing contrast
+    var prefs = ["Google UK English Male", "Google UK English Female",
+                 "Microsoft Hazel", "Microsoft George",
+                 "Daniel", "Samantha"];
+    for (var i = 0; i < prefs.length; i++) {
+      for (var j = 0; j < voices.length; j++) {
+        if (voices[j].name.indexOf(prefs[i]) !== -1) return voices[j];
+      }
+    }
+    // Fallback: any en-GB, then en-US, then first available
+    for (var k = 0; k < voices.length; k++) {
+      if (voices[k].lang === "en-GB") return voices[k];
+    }
+    for (var k = 0; k < voices.length; k++) {
+      if (voices[k].lang.indexOf("en") === 0) return voices[k];
+    }
+    return voices[0] || null;
+  }
+
+  function setupNarration() {
+    var btn = document.getElementById("narrate-btn");
+    if (!btn || !window.speechSynthesis) return;
+
+    // Voices may load async
+    if (window.speechSynthesis.getVoices().length) {
+      narrateVoice = pickVoice();
+    }
+    window.speechSynthesis.onvoiceschanged = function () {
+      narrateVoice = pickVoice();
+    };
+
+    btn.addEventListener("click", function () {
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        btn.textContent = "Listen";
+        btn.classList.remove("playing");
+        clearCardHighlights();
+        return;
+      }
+      startNarration(btn);
+    });
+  }
+
+  function clearCardHighlights() {
+    var cards = document.querySelectorAll(".sowhat-card");
+    for (var i = 0; i < cards.length; i++) cards[i].classList.remove("speaking");
+  }
+
+  function startNarration(btn) {
+    var texts = [
+      { id: "sowhat-1", text: "First. Good content fails without strong facilitation. The person running it matters as much as the curriculum." },
+      { id: "sowhat-2", text: "Second. One workshop changes nothing. Norm change requires repetition, practice, and social reinforcement over time." },
+      { id: "sowhat-3", text: "Third. Design for transfer. If participants leave with slogans instead of actions, you wasted their time." }
+    ];
+
+    btn.classList.add("playing");
+    btn.innerHTML = '<svg class="narrate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Stop';
+
+    var index = 0;
+
+    function speakNext() {
+      if (index >= texts.length) {
+        btn.classList.remove("playing");
+        btn.innerHTML = '<svg class="narrate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 010 7.07"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg> Listen';
+        clearCardHighlights();
+        return;
+      }
+
+      clearCardHighlights();
+      var card = document.getElementById(texts[index].id);
+      if (card) card.classList.add("speaking");
+
+      var utt = new SpeechSynthesisUtterance(texts[index].text);
+      if (narrateVoice) utt.voice = narrateVoice;
+      utt.rate = 0.92;
+      utt.pitch = 1.0;
+      utt.onend = function () {
+        index++;
+        speakNext();
+      };
+      window.speechSynthesis.speak(utt);
+    }
+
+    speakNext();
   }
 
   // --- Music (Spotify on last 3 slides) ---

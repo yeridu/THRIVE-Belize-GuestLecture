@@ -466,6 +466,44 @@ body {
   color: var(--black);
 }
 
+/* --- Narrate Button --- */
+.narrate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  padding: 12px 28px;
+  border: 2px solid var(--orange);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--orange);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 200ms var(--ease), color 200ms var(--ease);
+}
+
+.narrate-btn:hover {
+  background: var(--orange);
+  color: var(--white);
+}
+
+.narrate-btn.playing {
+  background: var(--orange);
+  color: var(--white);
+}
+
+.narrate-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.sowhat-card.speaking {
+  border-left-color: var(--orange);
+  background: rgba(232,99,10,0.06);
+  transition: background 300ms var(--ease);
+}
+
 /* --- Modules + Clusters (combined slide) --- */
 .modules-layout {
   display: grid;
