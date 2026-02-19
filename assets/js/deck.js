@@ -147,19 +147,16 @@
 
   function pickVoice() {
     var voices = window.speechSynthesis.getVoices();
-    // Prefer British English for that attention-grabbing contrast
-    var prefs = ["Google UK English Male", "Google UK English Female",
-                 "Microsoft Hazel", "Microsoft George",
-                 "Daniel", "Samantha"];
+    // Prefer younger-sounding female voices for energy
+    var prefs = ["Google US English", "Microsoft Zira", "Microsoft Jenny",
+                 "Samantha", "Karen", "Moira",
+                 "Google UK English Female", "Microsoft Hazel"];
     for (var i = 0; i < prefs.length; i++) {
       for (var j = 0; j < voices.length; j++) {
         if (voices[j].name.indexOf(prefs[i]) !== -1) return voices[j];
       }
     }
-    // Fallback: any en-GB, then en-US, then first available
-    for (var k = 0; k < voices.length; k++) {
-      if (voices[k].lang === "en-GB") return voices[k];
-    }
+    // Fallback: any female-sounding en voice, then first en
     for (var k = 0; k < voices.length; k++) {
       if (voices[k].lang.indexOf("en") === 0) return voices[k];
     }
@@ -197,9 +194,9 @@
 
   function startNarration(btn) {
     var texts = [
-      { id: "sowhat-1", text: "First. Good content fails without strong facilitation. The person running it matters as much as the curriculum." },
-      { id: "sowhat-2", text: "Second. One workshop changes nothing. Norm change requires repetition, practice, and social reinforcement over time." },
-      { id: "sowhat-3", text: "Third. Design for transfer. If participants leave with slogans instead of actions, you wasted their time." }
+      { id: "sowhat-1", text: "Okay, pay attention because this one is huge. It does not matter how amazing your content is... if the person delivering it is not great? It falls apart. The facilitator is everything." },
+      { id: "sowhat-2", text: "And here is the part nobody wants to hear. One workshop? One session? Changes absolutely nothing. You need repetition, you need practice, and you need people holding each other accountable over time. That is how norms actually shift." },
+      { id: "sowhat-3", text: "Last one, and honestly? This is the big one. Design for transfer. If your participants walk away with cute slogans but zero real actions... you just wasted everyone's time. Give them something they can actually use." }
     ];
 
     btn.classList.add("playing");
@@ -221,8 +218,8 @@
 
       var utt = new SpeechSynthesisUtterance(texts[index].text);
       if (narrateVoice) utt.voice = narrateVoice;
-      utt.rate = 0.92;
-      utt.pitch = 1.0;
+      utt.rate = 1.08;
+      utt.pitch = 1.18;
       utt.onend = function () {
         index++;
         speakNext();
