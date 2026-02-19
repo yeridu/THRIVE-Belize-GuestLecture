@@ -143,15 +143,23 @@
 
   // --- Music (Spotify on last 3 slides) ---
   var musicActive = false;
+  var musicLoaded = false;
+  var SPOTIFY_SRC = "https://open.spotify.com/embed/track/3HshDVDh8S4TFHj1HG63LH?utm_source=generator&theme=0";
 
   function updateMusic() {
     var player = document.getElementById("music-player");
-    if (!player) return;
+    var iframe = document.getElementById("spotify-embed");
+    if (!player || !iframe) return;
     // Last 3 slides: indices (slides.length - 3) through (slides.length - 1)
     var musicStart = slides.length - 3;
     var shouldShow = currentIndex >= musicStart;
 
     if (shouldShow && !musicActive) {
+      // Load iframe src on first visit to avoid lazy-load issues
+      if (!musicLoaded) {
+        iframe.src = SPOTIFY_SRC;
+        musicLoaded = true;
+      }
       player.classList.add("visible");
       musicActive = true;
     } else if (!shouldShow && musicActive) {
