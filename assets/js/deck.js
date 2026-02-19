@@ -142,48 +142,38 @@
     }
   }
 
-  // --- Narration (slide 7 read-aloud) ---
-  var narrateVoice = null;
+  // --- Narration (slide 7 audio read-aloud) ---
+  var narrateAudio = null;
+  var narrateTimers = [];
 
-  function pickVoice() {
-    var voices = window.speechSynthesis.getVoices();
-    // Prefer younger-sounding female voices for energy
-    var prefs = ["Google US English", "Microsoft Zira", "Microsoft Jenny",
-                 "Samantha", "Karen", "Moira",
-                 "Google UK English Female", "Microsoft Hazel"];
-    for (var i = 0; i < prefs.length; i++) {
-      for (var j = 0; j < voices.length; j++) {
-        if (voices[j].name.indexOf(prefs[i]) !== -1) return voices[j];
-      }
-    }
-    // Fallback: any female-sounding en voice, then first en
-    for (var k = 0; k < voices.length; k++) {
-      if (voices[k].lang.indexOf("en") === 0) return voices[k];
-    }
-    return voices[0] || null;
-  }
+  // Approximate timestamps (seconds) for each card in the audio
+  var NARRATE_CUE = [
+    { id: "sowhat-1", start: 0 },
+    { id: "sowhat-2", start: 10.5 },
+    { id: "sowhat-3", start: 22 }
+  ];
+
+  var LISTEN_HTML = '<svg class="narrate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 010 7.07"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg> Listen';
+  var STOP_HTML = '<svg class="narrate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Stop';
 
   function setupNarration() {
     var btn = document.getElementById("narrate-btn");
-    if (!btn || !window.speechSynthesis) return;
+    if (!btn) return;
 
-    // Voices may load async
-    if (window.speechSynthesis.getVoices().length) {
-      narrateVoice = pickVoice();
-    }
-    window.speechSynthesis.onvoiceschanged = function () {
-      narrateVoice = pickVoice();
-    };
+    narrateAudio = new Audio("assets/audio/sowhat_narration.mp3");
 
     btn.addEventListener("click", function () {
-      if (window.speechSynthesis.speaking) {
-        window.speechSynthesis.cancel();
-        btn.textContent = "Listen";
-        btn.classList.remove("playing");
-        clearCardHighlights();
-        return;
+      if (!narrateAudio.paused) {
+        stopNarration(btn);
+      } else {
+        startNarration(btn);
       }
-      startNarration(btn);
+    });
+
+    narrateAudio.addEventListener("ended", function () {
+      btn.classList.remove("playing");
+      btn.innerHTML = LISTEN_HTML;
+      clearCardHighlights();
     });
   }
 
@@ -192,42 +182,34 @@
     for (var i = 0; i < cards.length; i++) cards[i].classList.remove("speaking");
   }
 
+  function stopNarration(btn) {
+    narrateAudio.pause();
+    narrateAudio.currentTime = 0;
+    btn.classList.remove("playing");
+    btn.innerHTML = LISTEN_HTML;
+    clearCardHighlights();
+    for (var i = 0; i < narrateTimers.length; i++) clearTimeout(narrateTimers[i]);
+    narrateTimers = [];
+  }
+
   function startNarration(btn) {
-    var texts = [
-      { id: "sowhat-1", text: "Okay, pay attention because this one is huge. It does not matter how amazing your content is... if the person delivering it is not great? It falls apart. The facilitator is everything." },
-      { id: "sowhat-2", text: "And here is the part nobody wants to hear. One workshop? One session? Changes absolutely nothing. You need repetition, you need practice, and you need people holding each other accountable over time. That is how norms actually shift." },
-      { id: "sowhat-3", text: "Last one, and honestly? This is the big one. Design for transfer. If your participants walk away with cute slogans but zero real actions... you just wasted everyone's time. Give them something they can actually use." }
-    ];
-
     btn.classList.add("playing");
-    btn.innerHTML = '<svg class="narrate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Stop';
+    btn.innerHTML = STOP_HTML;
 
-    var index = 0;
-
-    function speakNext() {
-      if (index >= texts.length) {
-        btn.classList.remove("playing");
-        btn.innerHTML = '<svg class="narrate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 010 7.07"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg> Listen';
-        clearCardHighlights();
-        return;
-      }
-
-      clearCardHighlights();
-      var card = document.getElementById(texts[index].id);
-      if (card) card.classList.add("speaking");
-
-      var utt = new SpeechSynthesisUtterance(texts[index].text);
-      if (narrateVoice) utt.voice = narrateVoice;
-      utt.rate = 1.08;
-      utt.pitch = 1.18;
-      utt.onend = function () {
-        index++;
-        speakNext();
-      };
-      window.speechSynthesis.speak(utt);
+    // Schedule card highlights based on audio timestamps
+    for (var i = 0; i < NARRATE_CUE.length; i++) {
+      (function (cue) {
+        var t = setTimeout(function () {
+          clearCardHighlights();
+          var card = document.getElementById(cue.id);
+          if (card) card.classList.add("speaking");
+        }, cue.start * 1000);
+        narrateTimers.push(t);
+      })(NARRATE_CUE[i]);
     }
 
-    speakNext();
+    narrateAudio.currentTime = 0;
+    narrateAudio.play();
   }
 
   // --- Music (Spotify on last 3 slides) ---
