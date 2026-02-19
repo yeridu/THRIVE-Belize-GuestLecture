@@ -142,74 +142,80 @@
     }
   }
 
-  // --- Narration (slide 7 audio read-aloud) ---
-  var narrateAudio = null;
-  var narrateTimers = [];
+  // --- Narration (audio read-aloud buttons) ---
+  var activeNarrate = null; // { audio, btn, timers }
 
-  // Approximate timestamps (seconds) for each card in the audio
-  var NARRATE_CUE = [
-    { id: "sowhat-1", start: 0 },
-    { id: "sowhat-2", start: 10.5 },
-    { id: "sowhat-3", start: 22 }
-  ];
-
-  var LISTEN_HTML = '<svg class="narrate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 010 7.07"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg> Listen';
-  var STOP_HTML = '<svg class="narrate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Stop';
+  var LISTEN_ICON = '<svg class="narrate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 010 7.07"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg> Listen';
+  var STOP_ICON = '<svg class="narrate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Stop';
 
   function setupNarration() {
-    var btn = document.getElementById("narrate-btn");
-    if (!btn) return;
+    var btns = document.querySelectorAll(".narrate-btn[data-audio]");
+    for (var i = 0; i < btns.length; i++) {
+      (function (btn) {
+        var audio = new Audio(btn.getAttribute("data-audio"));
+        var cues = parseCues(btn.getAttribute("data-cues"));
 
-    narrateAudio = new Audio("assets/audio/sowhat_narration.mp3");
+        btn.addEventListener("click", function () {
+          if (activeNarrate && activeNarrate.btn === btn && !activeNarrate.audio.paused) {
+            stopNarrate();
+          } else {
+            if (activeNarrate) stopNarrate();
+            playNarrate(btn, audio, cues);
+          }
+        });
 
-    btn.addEventListener("click", function () {
-      if (!narrateAudio.paused) {
-        stopNarration(btn);
-      } else {
-        startNarration(btn);
-      }
-    });
+        audio.addEventListener("ended", function () {
+          btn.classList.remove("playing");
+          btn.innerHTML = LISTEN_ICON;
+          clearHighlights();
+        });
+      })(btns[i]);
+    }
+  }
 
-    narrateAudio.addEventListener("ended", function () {
-      btn.classList.remove("playing");
-      btn.innerHTML = LISTEN_HTML;
-      clearCardHighlights();
+  function parseCues(attr) {
+    if (!attr) return [];
+    return attr.split(",").map(function (pair) {
+      var parts = pair.split(":");
+      return { id: parts[0], start: parseFloat(parts[1]) };
     });
   }
 
-  function clearCardHighlights() {
+  function clearHighlights() {
     var cards = document.querySelectorAll(".sowhat-card");
     for (var i = 0; i < cards.length; i++) cards[i].classList.remove("speaking");
   }
 
-  function stopNarration(btn) {
-    narrateAudio.pause();
-    narrateAudio.currentTime = 0;
-    btn.classList.remove("playing");
-    btn.innerHTML = LISTEN_HTML;
-    clearCardHighlights();
-    for (var i = 0; i < narrateTimers.length; i++) clearTimeout(narrateTimers[i]);
-    narrateTimers = [];
+  function stopNarrate() {
+    if (!activeNarrate) return;
+    activeNarrate.audio.pause();
+    activeNarrate.audio.currentTime = 0;
+    activeNarrate.btn.classList.remove("playing");
+    activeNarrate.btn.innerHTML = LISTEN_ICON;
+    for (var i = 0; i < activeNarrate.timers.length; i++) clearTimeout(activeNarrate.timers[i]);
+    clearHighlights();
+    activeNarrate = null;
   }
 
-  function startNarration(btn) {
+  function playNarrate(btn, audio, cues) {
     btn.classList.add("playing");
-    btn.innerHTML = STOP_HTML;
+    btn.innerHTML = STOP_ICON;
+    var timers = [];
 
-    // Schedule card highlights based on audio timestamps
-    for (var i = 0; i < NARRATE_CUE.length; i++) {
+    for (var i = 0; i < cues.length; i++) {
       (function (cue) {
         var t = setTimeout(function () {
-          clearCardHighlights();
+          clearHighlights();
           var card = document.getElementById(cue.id);
           if (card) card.classList.add("speaking");
         }, cue.start * 1000);
-        narrateTimers.push(t);
-      })(NARRATE_CUE[i]);
+        timers.push(t);
+      })(cues[i]);
     }
 
-    narrateAudio.currentTime = 0;
-    narrateAudio.play();
+    activeNarrate = { audio: audio, btn: btn, timers: timers };
+    audio.currentTime = 0;
+    audio.play();
   }
 
   // --- Music (Spotify on last 3 slides) ---
