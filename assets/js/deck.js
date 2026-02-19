@@ -13,10 +13,10 @@
   var timerStepIndex = 0;
 
   var ACTIVITY_STEPS = [
-    { label: "Pick one THRIVE module + one evidence principle. Write a one-sentence workshop goal.", duration: 180 },
-    { label: "Plan your hardest moment. A participant says something harmful. Write what you'd say and do.", duration: 180 },
-    { label: "Pair up. Pitch your workshop in 60 seconds. Your partner gives you one challenge.", duration: 120 },
-    { label: "Whole class: share the toughest challenge you received.", duration: 120 }
+    { label: "From Video 1: Name one principle you would demand before funding any prevention program.", duration: 180 },
+    { label: "From Video 2: Which THRIVE module would you facilitate? Write one sentence why.", duration: 180 },
+    { label: "From Video 3: A participant pushes back. Write what you would say using one facilitation move.", duration: 120 },
+    { label: "Pair up: Share your three answers. Your partner picks the strongest one.", duration: 120 }
   ];
 
   function init() {
