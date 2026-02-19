@@ -44,8 +44,20 @@
       if (durEl) durEl.textContent = rec.duration || "Play to see";
 
       var player = document.querySelector('video[data-video="' + key + '"]');
-      if (player && rec.filename) {
+      if (!player) return;
+
+      // Try local file first, fall back to GitHub release
+      if (rec.filename) {
         player.src = rec.filename;
+        player.onerror = function () {
+          if (rec.remote) {
+            player.src = rec.remote;
+            if (fileEl) fileEl.textContent = "Streaming from GitHub";
+          }
+        };
+      } else if (rec.remote) {
+        player.src = rec.remote;
+        if (fileEl) fileEl.textContent = "Streaming from GitHub";
       }
     });
   }

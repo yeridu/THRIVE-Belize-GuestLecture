@@ -633,45 +633,82 @@ body {
 }
 
 /* --- Partner Slide --- */
-.partner-name {
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 700;
-  color: var(--black);
-  margin-bottom: 6px;
+.partner-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  width: 100%;
+  max-width: 1060px;
+  margin-top: 16px;
+  align-items: center;
 }
 
-.partner-title {
-  font-size: 1.15rem;
-  color: var(--orange);
-  font-weight: 600;
-  margin-bottom: 20px;
+.partner-photos {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.partner-photo {
+  width: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+.partner-photo--wide {
+  max-height: 220px;
+}
+
+.partner-photo--portrait {
+  max-height: 250px;
+}
+
+.partner-info {
+  text-align: left;
 }
 
 .partner-orgs {
-  font-size: 1.1rem;
-  color: #555;
-  line-height: 1.6;
-  max-width: 44ch;
-  margin-bottom: 28px;
+  list-style: none;
+  padding: 0;
+  margin-bottom: 24px;
+}
+
+.partner-orgs li {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--black);
+  padding: 8px 0 8px 16px;
+  border-left: 3px solid var(--orange);
+  margin-bottom: 10px;
+}
+
+.partner-orgs li span {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #666;
+  margin-top: 2px;
 }
 
 .partner-opportunity {
   background: var(--gray-bg);
   border-radius: 14px;
-  padding: 28px 32px;
-  max-width: 580px;
-  border-left: 4px solid var(--orange);
-  text-align: left;
+  padding: 24px 28px;
 }
 
 .partner-opportunity p {
-  font-size: 1.1rem;
-  line-height: 1.6;
+  font-size: 1.05rem;
+  line-height: 1.55;
   color: var(--black);
 }
 
 .partner-opportunity strong {
   color: var(--orange);
+}
+
+@media (max-width: 900px) {
+  .partner-layout { grid-template-columns: 1fr; }
 }
 
 /* --- Closing Slide --- */
