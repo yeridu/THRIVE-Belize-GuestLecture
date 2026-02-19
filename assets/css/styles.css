@@ -841,6 +841,40 @@ body {
   margin: 0 1px;
 }
 
+/* --- Music Player (Spotify embed) --- */
+.music-player {
+  position: fixed;
+  bottom: 80px;
+  left: 24px;
+  z-index: 92;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition:
+    opacity 400ms var(--ease),
+    transform 400ms var(--ease),
+    visibility 0s 400ms;
+}
+
+.music-player.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition:
+    opacity 400ms var(--ease),
+    transform 400ms var(--ease),
+    visibility 0s 0s;
+}
+
+.music-player iframe {
+  display: block;
+  border: none;
+  border-radius: 12px;
+}
+
 /* --- Hidden speaker notes in DOM --- */
 .speaker-note { display: none; }
 

@@ -70,6 +70,7 @@
     updateProgress();
     updateCounter();
     updateNotes();
+    updateMusic();
   }
 
   function nextSlide() { goToSlide(Math.min(slides.length - 1, currentIndex + 1)); }
@@ -137,6 +138,25 @@
       document.documentElement.requestFullscreen().catch(function () {});
     } else {
       document.exitFullscreen().catch(function () {});
+    }
+  }
+
+  // --- Music (Spotify on last 3 slides) ---
+  var musicActive = false;
+
+  function updateMusic() {
+    var player = document.getElementById("music-player");
+    if (!player) return;
+    // Last 3 slides: indices (slides.length - 3) through (slides.length - 1)
+    var musicStart = slides.length - 3;
+    var shouldShow = currentIndex >= musicStart;
+
+    if (shouldShow && !musicActive) {
+      player.classList.add("visible");
+      musicActive = true;
+    } else if (!shouldShow && musicActive) {
+      player.classList.remove("visible");
+      musicActive = false;
     }
   }
 
