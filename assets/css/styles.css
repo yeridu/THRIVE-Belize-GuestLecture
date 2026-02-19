@@ -799,82 +799,61 @@ body {
 }
 
 /* --- Partner Slide --- */
-.partner-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  width: 100%;
-  max-width: 1060px;
-  margin-top: 16px;
-  align-items: center;
-}
-
-.partner-photos {
+.partner-gallery {
   display: flex;
-  flex-direction: column;
   gap: 16px;
-}
-
-.partner-photo {
-  width: 100%;
-  border-radius: 12px;
-  object-fit: cover;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-}
-
-.partner-photo--wide {
-  max-height: 220px;
-}
-
-.partner-photo--portrait {
-  max-height: 250px;
-}
-
-.partner-info {
-  text-align: left;
-}
-
-.partner-orgs {
-  list-style: none;
-  padding: 0;
+  justify-content: center;
   margin-bottom: 24px;
 }
 
-.partner-orgs li {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: var(--black);
-  padding: 8px 0 8px 16px;
-  border-left: 3px solid var(--orange);
-  margin-bottom: 10px;
+.partner-img {
+  width: 240px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
 }
 
-.partner-orgs li span {
-  display: block;
-  font-size: 0.9rem;
-  font-weight: 400;
-  color: #666;
-  margin-top: 2px;
+.partner-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 24px;
 }
 
-.partner-opportunity {
+.partner-card {
   background: var(--gray-bg);
-  border-radius: 14px;
-  padding: 24px 28px;
+  border-radius: 12px;
+  padding: 18px 24px;
+  text-align: center;
+  flex: 1;
+  max-width: 260px;
 }
 
-.partner-opportunity p {
-  font-size: 1.05rem;
-  line-height: 1.55;
+.partner-card strong {
+  display: block;
+  font-size: 1rem;
   color: var(--black);
+  margin-bottom: 4px;
 }
 
-.partner-opportunity strong {
+.partner-card span {
+  font-size: 0.88rem;
+  color: #666;
+}
+
+.partner-cta {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.partner-cta strong {
   color: var(--orange);
 }
 
 @media (max-width: 900px) {
-  .partner-layout { grid-template-columns: 1fr; }
+  .partner-gallery { flex-direction: column; align-items: center; }
+  .partner-row { flex-direction: column; align-items: center; }
+  .partner-img { width: 200px; height: 130px; }
 }
 
 /* --- Closing Slide --- */
