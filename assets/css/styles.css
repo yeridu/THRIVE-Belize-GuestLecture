@@ -845,10 +845,18 @@ body {
 }
 
 .partner-logo {
-  height: 44px;
+  height: 40px;
+  max-height: 40px;
+  max-width: 160px;
   width: auto;
   object-fit: contain;
   margin-bottom: 8px;
+}
+
+.partner-card .photo-shield {
+  display: block;
+  max-height: 40px;
+  overflow: hidden;
 }
 
 .partner-card strong {
