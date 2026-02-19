@@ -986,6 +986,26 @@ body {
   margin: 0 1px;
 }
 
+/* --- Photo Protection --- */
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+}
+
+.photo-shield {
+  position: relative;
+  display: inline-block;
+}
+
+.photo-shield::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
 /* --- Hidden speaker notes in DOM --- */
 .speaker-note { display: none; }
 

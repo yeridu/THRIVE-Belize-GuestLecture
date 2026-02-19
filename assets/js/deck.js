@@ -27,6 +27,7 @@
     setupKeyboard();
     setupTimer();
     setupNarration();
+    protectPhotos();
     goToSlide(0);
   }
 
@@ -216,6 +217,19 @@
     activeNarrate = { audio: audio, btn: btn, timers: timers };
     audio.currentTime = 0;
     audio.play();
+  }
+
+  // --- Photo Protection ---
+  function protectPhotos() {
+    document.addEventListener("contextmenu", function (e) {
+      if (e.target.tagName === "IMG" || e.target.closest(".photo-shield")) {
+        e.preventDefault();
+      }
+    });
+    var imgs = document.querySelectorAll("img");
+    for (var i = 0; i < imgs.length; i++) {
+      imgs[i].setAttribute("draggable", "false");
+    }
   }
 
   // --- Music (Spotify on last 3 slides) ---
